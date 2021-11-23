@@ -1,0 +1,11 @@
+/venv/
+/vendor/
+/__pycache__/
+/company_img/
+/data_set/
+/img/
+/.vscode/
+
+launch.json
+*.pyc
+*.test.py

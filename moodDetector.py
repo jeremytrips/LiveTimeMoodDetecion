@@ -1,9 +1,6 @@
 from json import load
-import keras
-from keras.models import Model, Sequential
+from keras.models import Sequential
 from keras.layers import Conv2D, MaxPooling2D, AveragePooling2D, Flatten, Dense, Dropout
-
-import faceDetector
 
 import numpy as np
 

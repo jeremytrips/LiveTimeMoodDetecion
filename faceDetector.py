@@ -1,4 +1,6 @@
 import cv2
+from keras.preprocessing import image
+
 import numpy as np
 import math
 
@@ -15,13 +17,9 @@ def findEuclideanDistance(source_representation, test_representation):
     return euclidean_distance
 
 
-def process_face(img, target_size=(48,48)):
-    """
-    Function taken from the deepface package
-    It is used to pre-process images to the correct size
-    """
-    #img might be path, base64 or numpy array. Convert it to numpy whatever it is.
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+def process_face(img, target_size=(48,48), to_gray=True):	
+    if to_gray:
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
     factor_0 = target_size[0] / img.shape[0]
     factor_1 = target_size[1] / img.shape[1]
@@ -30,21 +28,19 @@ def process_face(img, target_size=(48,48)):
     dsize = (int(img.shape[1] * factor), int(img.shape[0] * factor))
     img = cv2.resize(img, dsize)
 
-    # Then pad the other side to the target size by adding black pixels
     diff_0 = target_size[0] - img.shape[0]
     diff_1 = target_size[1] - img.shape[1]
 
-    img = np.pad(img, ((diff_0 // 2, diff_0 - diff_0 // 2), (diff_1 // 2, diff_1 - diff_1 // 2)), 'constant')
+    if to_gray:
+        img = np.pad(img, ((diff_0 // 2, diff_0 - diff_0 // 2), (diff_1 // 2, diff_1 - diff_1 // 2)), 'constant')
+    else:
+        img = np.pad(img, ((diff_0 // 2, diff_0 - diff_0 // 2), (diff_1 // 2, diff_1 - diff_1 // 2), (0, 0)), 'constant')
 
-    #double check: if target image is not still the same size with target.
-    if img.shape[0:2] != target_size:
-        img = cv2.resize(img, target_size)
+    if to_gray:
+        img = np.expand_dims(img, axis = 0)
+        img = np.divide(img, 255) 
 
-    #normalizing the image pixels
-    img_pixels = np.expand_dims(img, axis = 0)
-    img_pixels = np.divide(img_pixels, 255) #normalize input in [0, 1]
-
-    return img_pixels
+    return img
 
 def align_face(img):
     eye_detector = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml')

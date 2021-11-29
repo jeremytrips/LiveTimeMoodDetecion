@@ -33,7 +33,7 @@ while 1:
                 emoji = Image.fromarray(emoji)
                 emoji = np.array(emoji.rotate(int(-item[2])))
 
-            emoji = faceDetector.preprocess_face(emoji, target_size=(w, h), to_gray=False)
+            emoji = faceDetector.process_face(emoji, target_size=(w, h), to_gray=False)
             img[y:y+h, x:x+w, :] = emoji
 
     cv2.imshow('img',img) 

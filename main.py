@@ -19,12 +19,14 @@ emojis = {
 cap = cv2.VideoCapture(0)
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_alt2.xml')
 
+MODEL = moodDetector.loadModel()
+
 while 1:
     ret, img = cap.read()
     faces = faceDetector.detect_faces(img)
     if faces is not None:
         for item in faces:
-            mood = moodDetector.analyze(item[0])
+            mood = moodDetector.analyze(MODEL, item[0])
             (x,y,w,h) = item[1]
             cv2.rectangle(img, (x, y),(x+w, y+h), (255, 0, 0), 2)
 

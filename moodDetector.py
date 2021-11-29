@@ -4,6 +4,8 @@ from keras.layers import Conv2D, MaxPooling2D, AveragePooling2D, Flatten, Dense,
 
 import numpy as np
 
+emotion_labels = ['angry', 'disgust', 'fear', 'happy', 'sad', 'surprise', 'neutral']
+
 def loadModel():
     num_classes = 7
     model = Sequential()
@@ -35,8 +37,6 @@ def loadModel():
 
     return model
 
-def analyze(image):
-    model = loadModel()
-    emotion_labels = ['angry', 'disgust', 'fear', 'happy', 'sad', 'surprise', 'neutral']
+def analyze(model, image):
     emotion_predictions = model.predict(image)[0,:]
     return emotion_labels[np.argmax(emotion_predictions)]

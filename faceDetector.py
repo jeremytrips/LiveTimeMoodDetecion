@@ -1,9 +1,5 @@
-from copy import deepcopy
 import cv2
-from deepface.commons.functions import preprocess_face
-from keras.backend import eye
 import numpy as np
-from PIL import Image
 import math
 
 def findEuclideanDistance(source_representation, test_representation):
@@ -45,9 +41,8 @@ def process_face(img, target_size=(48,48)):
         img = cv2.resize(img, target_size)
 
     #normalizing the image pixels
-    img_pixels = Image.img_to_array(img) #what this line doing? must?
-    img_pixels = np.expand_dims(img_pixels, axis = 0)
-    img_pixels /= 255 #normalize input in [0, 1]
+    img_pixels = np.expand_dims(img, axis = 0)
+    img_pixels = np.divide(img_pixels, 255) #normalize input in [0, 1]
 
     return img_pixels
 
@@ -130,7 +125,7 @@ def detect_faces(img):
             temp = img[int(y):int(y+h), int(x):int(x+w)]
 
             rotation = align_face(temp)
-            detected_face = preprocess_face(temp)
+            detected_face = process_face(temp)
             resp.append((detected_face, [x, y, w, h], rotation))
         return resp
 

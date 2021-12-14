@@ -23,18 +23,20 @@ MODEL = moodDetector.loadModel()
 
 while 1:
     ret, img = cap.read()
-    faces = faceDetector.detect_faces(img)
+    faces = faceDetector.detect_faces(img, face_cascade)
     if faces is not None:
         for item in faces:
             mood = moodDetector.analyze(MODEL, item[0])
             (x,y,w,h) = item[1]
-            cv2.rectangle(img, (x, y),(x+w, y+h), (255, 0, 0), 2)
 
             emoji = emojis[mood]
+            # Check if the rotation has been calculated
             if item[2] is not None:
+                
                 emoji = Image.fromarray(emoji)
                 emoji = np.array(emoji.rotate(int(-item[2])))
 
+            # formatte l'emoji exactement à la taille de la tête détectée
             emoji = faceDetector.process_face(emoji, target_size=(w, h), to_gray=False)
             img[y:y+h, x:x+w, :] = emoji
 

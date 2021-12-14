@@ -18,6 +18,10 @@ def findEuclideanDistance(source_representation, test_representation):
 
 
 def process_face(img, target_size=(48,48), to_gray=True):	
+    """
+    Modifie la taille de la matrice en target_size
+    """
+
     if to_gray:
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
@@ -31,6 +35,7 @@ def process_face(img, target_size=(48,48), to_gray=True):
     diff_0 = target_size[0] - img.shape[0]
     diff_1 = target_size[1] - img.shape[1]
 
+    # Gère la troisième dimension de l'image (couleur)
     if to_gray:
         img = np.pad(img, ((diff_0 // 2, diff_0 - diff_0 // 2), (diff_1 // 2, diff_1 - diff_1 // 2)), 'constant')
     else:
@@ -47,11 +52,15 @@ def align_face(img):
 
     detected_face_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) #eye detector expects gray scale image
     eyes = eye_detector.detectMultiScale(detected_face_gray, 1.1, 10)
-
+    
+    # Si le classifier a détecté une seul (ou zéro) oeil on retourne None
+    # Sinon on éssaye de detecter l'orientation
     if len(eyes) >= 2:
 
         eye_1 = eyes[0]; eye_2 = eyes[1]
 
+        # detect quel oeil est le gauche et lequel est le droit sur base
+        # de la position x (x plus petit = gauche)
         if eye_1[0] < eye_2[0]:
             left_eye = eye_1; right_eye = eye_2
         else:
@@ -59,22 +68,23 @@ def align_face(img):
 
         #-----------------------
         #find center of eyes
+        # (x + x+w)/2 = centre x            (y+y+h)/2 = centre y
         left_eye = (int(left_eye[0] + (left_eye[2] / 2)), int(left_eye[1] + (left_eye[3] / 2)))
         right_eye = (int(right_eye[0] + (right_eye[2]/2)), int(right_eye[1] + (right_eye[3]/2)))
-        
-        #this function aligns given face in img based on left and right eye coordinates
-
-        left_eye_x, left_eye_y = left_eye
-        right_eye_x, right_eye_y = right_eye
 
         #-----------------------
         #find rotation direction
 
+        left_eye_x, left_eye_y = left_eye
+        right_eye_x, right_eye_y = right_eye
+
         if left_eye_y > right_eye_y:
             point_3rd = (right_eye_x, left_eye_y)
+            # anti trigonométrique
             direction = -1 #rotate same direction to clock
         else:
             point_3rd = (left_eye_x, right_eye_y)
+            # trigonométrique
             direction = 1 #rotate inverse direction of clock
 
         #-----------------------
@@ -87,8 +97,8 @@ def align_face(img):
         #-----------------------
 
         #apply cosine rule
-
-        if b != 0 and c != 0: #this multiplication causes division by zero in cos_a calculation
+        # Si b ou c = 0 ça veut dire que les yeux sont alignés (tête droite)
+        if b != 0 and c != 0: 
 
             cos_a = (b*b + c*c - a*a)/(2*b*c)
             angle = np.arccos(cos_a) #angle in radian
@@ -101,17 +111,19 @@ def align_face(img):
 
 
 
-def detect_faces(img):
+
+
+def detect_faces(img, face_detector):
     """
     Detect and isolate the head in the img 
     """
-    face_detector = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_alt2.xml')
 
     resp = []
-    detected_face = None
     faces = []
     try:
-        faces = face_detector.detectMultiScale(img, 1.1, 10)
+        # Tableau qui contient un tableau de 4 points formant un rectangle autour de la tete
+        # [[0, 12, 12, 23]]
+        faces = face_detector.detectMultiScale(img, 1.1, 3)
     except:
         # todo handle the exception
         pass
@@ -121,8 +133,8 @@ def detect_faces(img):
             temp = img[int(y):int(y+h), int(x):int(x+w)]
 
             rotation = align_face(temp)
-            detected_face = process_face(temp)
-            resp.append((detected_face, [x, y, w, h], rotation))
+            processed_face = process_face(temp)
+            resp.append((processed_face, [x, y, w, h], rotation))
         return resp
 
     return None

@@ -13,6 +13,7 @@ emojis = {
     'sad': cv2.imread("./emoji/sad.jpeg"),
     'surprise': cv2.imread("./emoji/surprise.jpeg"),
     'neutral': cv2.imread("./emoji/neutral.jpeg"),
+    'mask': cv2.imread("./emoji/mask.jpeg")
 }
 
 
@@ -26,7 +27,12 @@ while 1:
     faces = faceDetector.detect_faces(img, face_cascade)
     if faces is not None:
         for item in faces:
-            mood = moodDetector.analyze(MODEL, item[0])
+            mask = False
+            if mask:
+                # https://data-flair.training/blogs/face-mask-detection-with-python/
+                mood = "mask"
+            else:
+                mood = moodDetector.analyze(MODEL, item[0])
             (x,y,w,h) = item[1]
 
             emoji = emojis[mood]

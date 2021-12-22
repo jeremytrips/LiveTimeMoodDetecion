@@ -19,8 +19,8 @@ emojis = {
 }
 
 
-#cap = cv2.VideoCapture(0)
-cap = cv2.VideoCapture("mask5.jpg")
+cap = cv2.VideoCapture(0)
+# cap = cv2.VideoCapture("mask5.jpg")
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_alt2.xml')
 
 MODEL = moodDetector.loadModel()
@@ -32,8 +32,6 @@ while 1:
     if faces is not None:
         for item in faces:
             mask = maskDetector.analyze(item[1])
-            print(item[1].shape)
-            print(maskDetector.analyze(item[1]))
             if mask:
                 # https://data-flair.training/blogs/face-mask-detection-with-python/
                 mood = "mask"
@@ -56,13 +54,10 @@ while 1:
     print(img.shape)
     cv2.imshow('img',img) 
 
-    cv2.waitKey()
-
-
     
     k = cv2.waitKey(30) & 0xff
     if k == 27:
         break
-time.sleep(10000)
+
 cap.release()
 cv2.destroyAllWindows()

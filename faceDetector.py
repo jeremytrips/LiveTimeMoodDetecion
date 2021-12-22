@@ -131,10 +131,11 @@ def detect_faces(img, face_detector):
     if len(faces) > 0:
         for x,y,w,h in faces:
             temp = img[int(y):int(y+h), int(x):int(x+w)]
-
+            
             rotation = align_face(temp)
-            processed_face = process_face(temp)
-            resp.append((processed_face, [x, y, w, h], rotation))
+            processed_face_48 = process_face(temp)
+            processed_face_150 = process_face(temp, target_size=(150,150), to_gray=False)
+            resp.append((processed_face_48, processed_face_150 , [x, y, w, h], rotation))
         return resp
 
     return None

@@ -5,7 +5,9 @@
 /data_set/
 /img/
 /.vscode/
-
+/MaskPictures/
 launch.json
 *.pyc
 *.test.py
+
+*.jpg

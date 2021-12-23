@@ -3,6 +3,7 @@ import numpy as np
 import faceDetector
 import maskDetector
 import moodDetector
+from keras.models import load_model
 import time
 
 from PIL import Image
@@ -20,10 +21,11 @@ emojis = {
 
 
 cap = cv2.VideoCapture(0)
-# cap = cv2.VideoCapture("mask5.jpg")
+#cap = cv2.VideoCapture("./juetmoi.jpg")
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_alt2.xml')
 
 MODEL = moodDetector.loadModel()
+MODEL_MASK = load_model("./data/mask_detector.model")
 
 while 1:
     ret, img = cap.read()
@@ -31,8 +33,8 @@ while 1:
     faces = faceDetector.detect_faces(img, face_cascade)
     if faces is not None:
         for item in faces:
-            mask = maskDetector.analyze(item[1])
-            if mask:
+            mask = maskDetector.analyze(MODEL_MASK, item[1])
+            if not mask:
                 # https://data-flair.training/blogs/face-mask-detection-with-python/
                 mood = "mask"
             else:
@@ -51,10 +53,8 @@ while 1:
             emoji = faceDetector.process_face(emoji, target_size=(w, h), to_gray=False)
             img[y:y+h, x:x+w, :] = emoji
 
-    print(img.shape)
     cv2.imshow('img',img) 
 
-    
     k = cv2.waitKey(30) & 0xff
     if k == 27:
         break

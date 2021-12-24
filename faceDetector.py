@@ -134,8 +134,8 @@ def detect_faces(img, face_detector):
             
             rotation = align_face(temp)
             processed_face_48 = process_face(temp)
-            processed_face_150 = process_face(temp, target_size=(150,150), to_gray=False)
-            resp.append((processed_face_48, processed_face_150 , [x, y, w, h], rotation))
+            processed_face_x = process_face(temp, target_size=(224,224), to_gray=False)
+            resp.append((processed_face_48, processed_face_x , [x, y, w, h], rotation))
         return resp
 
     return None

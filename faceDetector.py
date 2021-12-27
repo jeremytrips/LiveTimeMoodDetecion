@@ -25,21 +25,7 @@ def process_face(img, target_size=(48,48), to_gray=True):
     if to_gray:
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-    factor_0 = target_size[0] / img.shape[0]
-    factor_1 = target_size[1] / img.shape[1]
-    factor = min(factor_0, factor_1)
-
-    dsize = (int(img.shape[1] * factor), int(img.shape[0] * factor))
-    img = cv2.resize(img, dsize)
-
-    diff_0 = target_size[0] - img.shape[0]
-    diff_1 = target_size[1] - img.shape[1]
-
-    # Gère la troisième dimension de l'image (couleur)
-    if to_gray:
-        img = np.pad(img, ((diff_0 // 2, diff_0 - diff_0 // 2), (diff_1 // 2, diff_1 - diff_1 // 2)), 'constant')
-    else:
-        img = np.pad(img, ((diff_0 // 2, diff_0 - diff_0 // 2), (diff_1 // 2, diff_1 - diff_1 // 2), (0, 0)), 'constant')
+    img = cv2.resize(img, target_size)
 
     if to_gray:
         img = np.expand_dims(img, axis = 0)

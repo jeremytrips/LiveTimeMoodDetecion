@@ -10,30 +10,25 @@ def loadModel():
     num_classes = 7
     model = Sequential()
 
-    #1st convolution layer
-    model.add(Conv2D(64, (5, 5), activation='relu', input_shape=(48,48,1)))
-    model.add(MaxPooling2D(pool_size=(5,5), strides=(2, 2)))
+    model.add(Conv2D(64, kernel_size=(3, 3), activation='relu', input_shape=(48,48,1)))
+    model.add(Conv2D(64, kernel_size=(3, 3), activation='relu'))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(Dropout(0.2))
 
-    #2nd convolution layer
-    model.add(Conv2D(64, (3, 3), activation='relu'))
-    model.add(Conv2D(64, (3, 3), activation='relu'))
-    model.add(AveragePooling2D(pool_size=(3,3), strides=(2, 2)))
-
-    #3rd convolution layer
-    model.add(Conv2D(128, (3, 3), activation='relu'))
-    model.add(Conv2D(128, (3, 3), activation='relu'))
-    model.add(AveragePooling2D(pool_size=(3,3), strides=(2, 2)))
+    model.add(Conv2D(128, kernel_size=(3, 3), activation='relu'))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(Conv2D(128, kernel_size=(3, 3), activation='relu'))
+    model.add(MaxPooling2D(pool_size=(2, 2)))
+    model.add(Dropout(0.22))
 
     model.add(Flatten())
-
-    #fully connected neural networks
-    model.add(Dense(1024, activation='relu'))
-    model.add(Dropout(0.2))
-    model.add(Dense(1024, activation='relu'))
-    model.add(Dropout(0.2))
+    model.add(Dense(512, activation='relu'))
+    model.add(Dropout(0.5))
+    model.add(Dense(256, activation='relu'))
+    model.add(Dropout(0.5))
     model.add(Dense(num_classes, activation='softmax'))
 
-    model.load_weights('./data/weight.h5')
+    model.load_weights('./data/weigths.h5')
 
     return model
 
